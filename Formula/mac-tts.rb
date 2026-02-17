@@ -3,8 +3,8 @@ class MacTts < Formula
 
   desc "macOS TTS HTTP API server using native say command"
   homepage "https://github.com/kalijason/mac-tts"
-  url "https://github.com/kalijason/mac-tts/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "d31eae7e4ae3b8e7a109021a588f89b36d4cd1149eeedad4db679fc8b0e267d2"
+  url "https://github.com/kalijason/mac-tts/archive/refs/tags/v1.0.1.tar.gz"
+  sha256 "70fd9acc55a7f4f4ec2348f141cf9da3b59908596fd7a6506c3b7fb20c35235f"
   license "MIT"
 
   depends_on "python@3.12"
@@ -46,15 +46,6 @@ class MacTts < Formula
 
   def install
     virtualenv_install_with_resources
-
-    # Install our script
-    libexec.install "mac_tts.py"
-
-    # Create wrapper script
-    (bin/"mac-tts").write <<~EOS
-      #!/bin/bash
-      exec "#{libexec}/bin/python" "#{libexec}/mac_tts.py" "$@"
-    EOS
   end
 
   service do
