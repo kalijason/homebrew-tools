@@ -3,8 +3,8 @@ class MacTts < Formula
 
   desc "macOS TTS HTTP API server using native say command"
   homepage "https://github.com/kalijason/mac-tts"
-  url "https://github.com/kalijason/mac-tts/archive/refs/tags/v1.0.1.tar.gz"
-  sha256 "70fd9acc55a7f4f4ec2348f141cf9da3b59908596fd7a6506c3b7fb20c35235f"
+  url "https://github.com/kalijason/mac-tts/archive/refs/tags/v1.0.2.tar.gz"
+  sha256 "01276c4913cc43b4fd29977df7c303eee04151374d394517141880f043aaf8b3"
   license "MIT"
 
   depends_on "python@3.12"
