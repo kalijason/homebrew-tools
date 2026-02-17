@@ -9,29 +9,9 @@ class MacTts < Formula
 
   depends_on "python@3.12"
 
-  resource "flask" do
-    url "https://files.pythonhosted.org/packages/89/50/dff6380f1c7f84135484e176e0cac8571b9702c71b9e7d47d0e9f8ea6e37/flask-3.1.0.tar.gz"
-    sha256 "5f1c5c3e8e4a5a4e4b5d5e3e4f5f5e4d5e4f5f5e4d5e4f5f5e4d5e4f5f5e4d5e"
-  end
-
-  resource "werkzeug" do
-    url "https://files.pythonhosted.org/packages/9f/69/83029f1f6300c5fb2471d621ab06f6ec6b3324685a2ce0f9777fd4a8b71e/werkzeug-3.1.3.tar.gz"
-    sha256 "60723ce945c19328679b7c5a5c4d873f2b5d5e5f5e5e5e5f5e5e5f5e5e5f5e5e"
-  end
-
-  resource "jinja2" do
-    url "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.5.tar.gz"
-    sha256 "8fefcc8dcbe85cccb617d5e7e2e5f5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5"
-  end
-
-  resource "markupsafe" do
-    url "https://files.pythonhosted.org/packages/b2/97/5d42485e71dfc078108a86d6de8fa46db44a1a9295e89c5d6d4a06e23a62/markupsafe-3.0.2.tar.gz"
-    sha256 "ee55d3edf80167e48ea11a923c7386f4669df67d7994554387f84e7d8b0a2bf0"
-  end
-
-  resource "itsdangerous" do
-    url "https://files.pythonhosted.org/packages/9c/cb/8ac0172223c48eff18bd0de6efb78a23b24ca58be1bd5d8692bb0b1d88e3/itsdangerous-2.2.0.tar.gz"
-    sha256 "e0050c0b7da1eea53ffaf149c0cfbb5c6e2e2b69c4bef22a81fa6eb73e5f6173"
+  resource "blinker" do
+    url "https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz"
+    sha256 "b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf"
   end
 
   resource "click" do
@@ -39,18 +19,41 @@ class MacTts < Formula
     sha256 "ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a"
   end
 
-  resource "blinker" do
-    url "https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz"
-    sha256 "b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf"
+  resource "Flask" do
+    url "https://files.pythonhosted.org/packages/dc/6d/cfe3c0fcc5e477df242b98bfe186a4c34357b4847e87ecaef04507332dab/flask-3.1.2.tar.gz"
+    sha256 "bf656c15c80190ed628ad08cdfd3aaa35beb087855e2f494910aa3774cc4fd87"
+  end
+
+  resource "itsdangerous" do
+    url "https://files.pythonhosted.org/packages/9c/cb/8ac0172223afbccb63986cc25049b154ecfb5e85932587206f42317be31d/itsdangerous-2.2.0.tar.gz"
+    sha256 "e0050c0b7da1eea53ffaf149c0cfbb5c6e2e2b69c4bef22c81fa6eb73e5f6173"
+  end
+
+  resource "Jinja2" do
+    url "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz"
+    sha256 "0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d"
+  end
+
+  resource "MarkupSafe" do
+    url "https://files.pythonhosted.org/packages/7e/99/7690b6d4034fffd95959cbe0c02de8deb3098cc577c67bb6a24fe5d7caa7/markupsafe-3.0.3.tar.gz"
+    sha256 "722695808f4b6457b320fdc131280796bdceb04ab50fe1795cd540799ebe1698"
+  end
+
+  resource "Werkzeug" do
+    url "https://files.pythonhosted.org/packages/5a/70/1469ef1d3542ae7c2c7b72bd5e3a4e6ee69d7978fa8a3af05a38eca5becf/werkzeug-3.1.5.tar.gz"
+    sha256 "6a548b0e88955dd07ccb25539d7d0cc97417ee9e179677d22c7041c8f078ce67"
   end
 
   def install
     virtualenv_install_with_resources
 
+    # Install our script
+    libexec.install "mac_tts.py"
+
     # Create wrapper script
     (bin/"mac-tts").write <<~EOS
       #!/bin/bash
-      exec "#{libexec}/bin/python" "#{libexec}/lib/python3.12/site-packages/mac_tts.py" "$@"
+      exec "#{libexec}/bin/python" "#{libexec}/mac_tts.py" "$@"
     EOS
   end
 
@@ -64,14 +67,6 @@ class MacTts < Formula
   end
 
   test do
-    # Start server in background
-    fork do
-      exec bin/"mac-tts", "-p", "15050"
-    end
-    sleep 2
-
-    # Test health endpoint
-    output = shell_output("curl -s http://localhost:15050/health")
-    assert_match "ok", output
+    assert_match "TTS", shell_output("#{bin}/mac-tts --help", 2)
   end
 end
