@@ -2,7 +2,7 @@ class QwenTts < Formula
   desc "Qwen3-TTS HTTP API server for AI-powered text-to-speech"
   homepage "https://github.com/kalijason/qwen-tts-server"
   url "https://github.com/kalijason/qwen-tts-server/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "REPLACE_WITH_ACTUAL_SHA256_AFTER_RELEASE"
+  sha256 "9f7d04c864c0953ab023a39bd0a55027f7ecb2ab4772f032b770f1cae348da6b"
   license "MIT"
 
   depends_on "python@3.12"
