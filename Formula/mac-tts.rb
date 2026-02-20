@@ -5,26 +5,21 @@ class MacTts < Formula
   sha256 "01276c4913cc43b4fd29977df7c303eee04151374d394517141880f043aaf8b3"
   license "MIT"
 
-  depends_on "python@3.12"
+  depends_on "uv"
 
   def install
     libexec.install Dir["*"]
 
-    python = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"mac-tts").write <<~EOS
       #!/bin/bash
       set -e
-      PYTHON="#{python}"
       VENV_DIR="#{var}/lib/mac-tts/venv"
       SOURCE_DIR="#{libexec}"
 
       if [ ! -f "${VENV_DIR}/bin/activate" ]; then
         echo "[mac-tts] First run, installing dependencies..." >&2
-        mkdir -p "${VENV_DIR}"
-        "${PYTHON}" -m venv "${VENV_DIR}"
-        source "${VENV_DIR}/bin/activate"
-        pip install --quiet --upgrade pip
-        pip install --quiet -r "${SOURCE_DIR}/requirements.txt"
+        uv venv "${VENV_DIR}" --python 3.12 --quiet
+        uv pip install --quiet -r "${SOURCE_DIR}/requirements.txt" --python "${VENV_DIR}/bin/python"
       fi
 
       source "${VENV_DIR}/bin/activate"

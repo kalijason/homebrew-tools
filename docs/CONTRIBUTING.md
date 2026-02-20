@@ -14,27 +14,22 @@ class ToolName < Formula
   sha256 "SHA256_HASH"
   license "MIT"
 
-  depends_on "python@3.12"
+  depends_on "uv"
   # Add other dependencies as needed (e.g., ffmpeg)
 
   def install
     libexec.install Dir["*"]
 
-    python = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"tool-name").write <<~EOS
       #!/bin/bash
       set -e
-      PYTHON="#{python}"
       VENV_DIR="#{var}/lib/tool-name/venv"
       SOURCE_DIR="#{libexec}"
 
       if [ ! -f "${VENV_DIR}/bin/activate" ]; then
         echo "[tool-name] First run, installing dependencies..." >&2
-        mkdir -p "${VENV_DIR}"
-        "${PYTHON}" -m venv "${VENV_DIR}"
-        source "${VENV_DIR}/bin/activate"
-        pip install --quiet --upgrade pip
-        pip install --quiet -r "${SOURCE_DIR}/requirements.txt"
+        uv venv "${VENV_DIR}" --python 3.12 --quiet
+        uv pip install --quiet -r "${SOURCE_DIR}/requirements.txt" --python "${VENV_DIR}/bin/python"
       fi
 
       source "${VENV_DIR}/bin/activate"

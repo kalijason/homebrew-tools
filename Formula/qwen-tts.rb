@@ -5,28 +5,23 @@ class QwenTts < Formula
   sha256 "9f7d04c864c0953ab023a39bd0a55027f7ecb2ab4772f032b770f1cae348da6b"
   license "MIT"
 
-  depends_on "python@3.12"
+  depends_on "uv"
   depends_on "ffmpeg"
 
   def install
     libexec.install Dir["*"]
 
-    python = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"qwen-tts").write <<~EOS
       #!/bin/bash
       set -e
-      PYTHON="#{python}"
       VENV_DIR="#{var}/lib/qwen-tts/venv"
       SOURCE_DIR="#{libexec}"
 
       if [ ! -f "${VENV_DIR}/bin/activate" ]; then
         echo "[qwen-tts] First run, installing dependencies..." >&2
         echo "[qwen-tts] This may take a while (~500MB download)..." >&2
-        mkdir -p "${VENV_DIR}"
-        "${PYTHON}" -m venv "${VENV_DIR}"
-        source "${VENV_DIR}/bin/activate"
-        pip install --quiet --upgrade pip
-        pip install --quiet -r "${SOURCE_DIR}/requirements.txt"
+        uv venv "${VENV_DIR}" --python 3.12 --quiet
+        uv pip install --quiet -r "${SOURCE_DIR}/requirements.txt" --python "${VENV_DIR}/bin/python"
       fi
 
       source "${VENV_DIR}/bin/activate"
