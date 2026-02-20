@@ -10,23 +10,25 @@ class MacTts < Formula
   def install
     libexec.install Dir["*"]
 
+    python = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"mac-tts").write <<~EOS
       #!/bin/bash
       set -e
+      PYTHON="#{python}"
       VENV_DIR="#{var}/lib/mac-tts/venv"
       SOURCE_DIR="#{libexec}"
 
       if [ ! -f "${VENV_DIR}/bin/activate" ]; then
         echo "[mac-tts] First run, installing dependencies..." >&2
         mkdir -p "${VENV_DIR}"
-        python3 -m venv "${VENV_DIR}"
+        "${PYTHON}" -m venv "${VENV_DIR}"
         source "${VENV_DIR}/bin/activate"
         pip install --quiet --upgrade pip
         pip install --quiet -r "${SOURCE_DIR}/requirements.txt"
       fi
 
       source "${VENV_DIR}/bin/activate"
-      exec python3 "${SOURCE_DIR}/mac_tts.py" "$@"
+      exec python "${SOURCE_DIR}/mac_tts.py" "$@"
     EOS
     chmod 0755, bin/"mac-tts"
     (var/"log").mkpath

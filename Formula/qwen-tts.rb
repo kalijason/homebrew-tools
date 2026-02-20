@@ -11,9 +11,11 @@ class QwenTts < Formula
   def install
     libexec.install Dir["*"]
 
+    python = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"qwen-tts").write <<~EOS
       #!/bin/bash
       set -e
+      PYTHON="#{python}"
       VENV_DIR="#{var}/lib/qwen-tts/venv"
       SOURCE_DIR="#{libexec}"
 
@@ -21,14 +23,14 @@ class QwenTts < Formula
         echo "[qwen-tts] First run, installing dependencies..." >&2
         echo "[qwen-tts] This may take a while (~500MB download)..." >&2
         mkdir -p "${VENV_DIR}"
-        python3 -m venv "${VENV_DIR}"
+        "${PYTHON}" -m venv "${VENV_DIR}"
         source "${VENV_DIR}/bin/activate"
         pip install --quiet --upgrade pip
         pip install --quiet -r "${SOURCE_DIR}/requirements.txt"
       fi
 
       source "${VENV_DIR}/bin/activate"
-      exec python3 "${SOURCE_DIR}/qwen_tts_server.py" "$@"
+      exec python "${SOURCE_DIR}/qwen_tts_server.py" "$@"
     EOS
     chmod 0755, bin/"qwen-tts"
     (var/"log").mkpath
